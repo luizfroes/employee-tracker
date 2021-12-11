@@ -1,3 +1,9 @@
+const {
+  generateRoleChoices,
+  generateManagerChoices,
+  generateDepartmentChoices,
+} = require("./modules/utils");
+
 const openingQuestion = [
   {
     type: "list",
