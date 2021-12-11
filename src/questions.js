@@ -60,6 +60,68 @@ const openingQuestion = [
         name: "View the total budget of a Department",
         value: "viewDepartmentBudget",
       },
+      {
+        name: "Quit",
+        value: "quit",
+      },
     ],
   },
 ];
+
+const addDepartmentQuestion = [
+  {
+    type: "input",
+    message: "What is the name of the Department you want to add?",
+    name: "department",
+  },
+];
+
+const addRoleQuestion = [
+  {
+    type: "list",
+    message: "Please select a department:",
+    name: "departmentId",
+    choices: generateDepartmentChoices(departments),
+  },
+  {
+    type: "input",
+    message: "Please enter role title:",
+    name: "title",
+  },
+  {
+    type: "input",
+    message: "Please enter role salary:",
+    name: "salary",
+  },
+];
+
+const addEmployeeQuestion = [
+  {
+    type: "list",
+    message: "Please select a role:",
+    name: "roleId",
+    choices: generateRoleChoices(roles),
+  },
+  {
+    type: "input",
+    message: "Please enter the First Name:",
+    name: "firstName",
+  },
+  {
+    type: "input",
+    message: "Please enter the Last Name:",
+    name: "lastName",
+  },
+  {
+    type: "list",
+    message: "Please select a Manager:",
+    name: "managerId",
+    choices: generateManagerChoices(managers),
+  },
+];
+module.exports = {
+  openingQuestion,
+  addDepartmentQuestion,
+  addRoleQuestion,
+  addEmployeeQuestion,
+};
