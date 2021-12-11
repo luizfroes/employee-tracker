@@ -1,5 +1,10 @@
 const inquirer = require("inquirer");
-const { openingQuestion } = require("./questions");
+const {
+  openingQuestion,
+  addDepartmentQuestion,
+  addRoleQuestion,
+  addEmployeeQuestion,
+} = require("./questions");
 
 const displayDepartments = () => {
   // execute mysql query
@@ -60,61 +65,67 @@ const start = async () => {
   const chosenAction = await inquirer.prompt(openingQuestion);
 
   // insert if blocks for all actions
-  if ("addDepartment") {
+  if (chosenAction === "addDepartment") {
     // prompt department questions (name) and get answers
+    const department = await inquirer.prompt(addDepartmentQuestion);
+
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("addRole") {
+  if (chosenAction === "addRole") {
     // get departments from DB
     // pass the departments to a choice constructor function
     // prompt question to select department, title, salary and get answers
+    const role = await inquirer.prompt(addRoleQuestion);
+
     // construct mysql insert query for role
     // execute mysql query
   }
 
-  if ("addAEmployee") {
+  if (chosenAction === "addAEmployee") {
     // get roles from DB
     // get employees from DB
     // pass the roles to a choice constructor function
     // pass the employees to a choice constructor function
     // prompt question to select role, select manager, first name, last name and get answers
+    const employee = await inquirer.prompt(addEmployeeQuestion);
+
     // construct mysql insert query for employee
     // execute mysql query
   }
 
-  if ("deleteARole") {
+  if (chosenAction === "deleteARole") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("deleteADepartment") {
+  if (chosenAction === "deleteADepartment") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("deleteAEmployee") {
+  if (chosenAction === "deleteAEmployee") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("updateEmployeeRole") {
+  if (chosenAction === "updateEmployeeRole") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("updateEmployeeManagers") {
+  if (chosenAction === "updateEmployeeManagers") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("viewAllDepartments") {
+  if (chosenAction === "viewAllDepartments") {
     // get departments from DB
     // pass the departments to a choice constructor function
     // prompt question to select department, title, salary and get answers
@@ -122,31 +133,31 @@ const start = async () => {
     // execute mysql query
   }
 
-  if ("viewAllRoles") {
+  if (chosenAction === "viewAllRoles") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("viewAllEmployees") {
+  if (chosenAction === "viewAllEmployees") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("viewEmployeesByManager") {
+  if (chosenAction === "viewEmployeesByManager") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("viewEmployeesByDepartment") {
+  if (chosenAction === "viewEmployeesByDepartment") {
     // prompt department questions (name) and get answers
     // construct mysql insert query
     // execute mysql query
   }
 
-  if ("viewDepartmentBudget") {
+  if (chosenAction === "viewDepartmentBudget") {
     // get departments from DB
     // pass the departments to a choice constructor function
     // prompt question to select department, title, salary and get answers
@@ -154,13 +165,11 @@ const start = async () => {
     // execute mysql query
   }
 
-  if ("addEmployee") {
-    // get roles from DB
-    // get employees from DB
-    // pass the roles to a choice constructor function
-    // pass the employees to a choice constructor function
-    // prompt question to select role, select manager, first name, last name and get answers
-    // construct mysql insert query for employee
+  if (chosenAction === "quit") {
+    // get departments from DB
+    // pass the departments to a choice constructor function
+    // prompt question to select department, title, salary and get answers
+    // construct mysql insert query for role
     // execute mysql query
   }
 };
