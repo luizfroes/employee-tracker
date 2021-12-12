@@ -9,6 +9,12 @@ const {
   addEmployeeQuestion,
 } = require("./questions");
 
+const {
+  displayDepartments,
+  displayRoles,
+  displayEmployees,
+} = require("./utils/utils");
+
 const start = async () => {
   const db = new Db({
     host: process.envDB_HOST || "localhost",
@@ -91,20 +97,17 @@ const start = async () => {
     // execute mysql query
     //}
 
-    //if (chosenAction === "viewAllDepartments") {
-    // construct mysql view query
-    // execute mysql query
-    //}
+    if (chosenAction === "viewAllDepartments") {
+      displayDepartments(db);
+    }
 
-    //if (chosenAction === "viewAllRoles") {
-    // construct mysql view query
-    // execute mysql query
-    //}
+    if (chosenAction === "viewAllRoles") {
+      displayRoles(db);
+    }
 
-    //if (chosenAction === "viewAllEmployees") {
-    // construct mysql view query
-    // execute mysql query
-    //}
+    if (chosenAction === "viewAllEmployees") {
+      displayEmployees(db);
+    }
 
     //if (chosenAction === "viewEmployeesByManager") {
     // construct mysql view query ordered by manager
