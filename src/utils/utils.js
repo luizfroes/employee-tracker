@@ -1,6 +1,8 @@
 const displayDepartments = async (db) => {
   // execute mysql query
-  const departments = await db.query("SELECT * FROM department");
+  const departments = await db.query(
+    "SELECT id, name AS Department FROM department"
+  );
 
   // log/table departments
   return console.table(departments);
@@ -9,7 +11,7 @@ const displayDepartments = async (db) => {
 const displayRoles = async (db) => {
   // execute mysql query
   const roles = await db.query(
-    "SELECT role.id, role.title, role.salary, department.name FROM role JOIN department ON role.departmentId = department.id ORDER BY department.name;"
+    "SELECT role.id, role.title AS Role, role.salary AS Salary, department.name AS Department FROM role JOIN department ON role.departmentId = department.id ORDER BY department.name;"
   );
 
   // log/table roles
@@ -19,7 +21,7 @@ const displayRoles = async (db) => {
 const displayEmployees = async (db) => {
   // execute mysql query
   const employees = await db.query(
-    "SELECT employee_role.firstName, employee_role.lastName, title, salary, name FROM employee employee_role LEFT JOIN role ON employee_role.roleId=role.id LEFT JOIN department ON role.departmentId=department.id"
+    "SELECT employee_role.firstName AS Name, employee_role.lastName AS Surname, title AS Role, salary AS Salary, name AS Department FROM employee employee_role LEFT JOIN role ON employee_role.roleId=role.id LEFT JOIN department ON role.departmentId=department.id"
   );
 
   // log/table employees
@@ -37,7 +39,7 @@ const displayEmployeesByManager = async (db) => {
 const displayEmployeesByDepartment = async (db) => {
   // execute mysql query
   const employees = await db.query(
-    "SELECT employee_role.firstName, employee_role.lastName, title, salary, name FROM employee employee_role LEFT JOIN role ON employee_role.roleId=role.id LEFT JOIN department ON role.departmentId=department.id ORDER BY department.name;"
+    "SELECT employee_role.firstName AS Name, employee_role.lastName AS Surname, title AS Role, salary AS Salary, name AS Department FROM employee employee_role LEFT JOIN role ON employee_role.roleId=role.id LEFT JOIN department ON role.departmentId=department.id ORDER BY department.name;"
   );
 
   // log/table employees

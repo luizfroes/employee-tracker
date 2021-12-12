@@ -1,4 +1,5 @@
 const inquirer = require("inquirer");
+const nodemon = require("nodemon");
 
 const Db = require("./lib/DB");
 
@@ -13,6 +14,9 @@ const {
   displayDepartments,
   displayRoles,
   displayEmployees,
+  getDepartments,
+  getRoles,
+  getEmployees,
 } = require("./utils/utils");
 
 const start = async () => {
@@ -44,28 +48,120 @@ const start = async () => {
       await db.query(query);
     }
 
-    if (chosenAction === "addRole") {
+    if (chosenAction === "addARole") {
       // get departments from DB
-      const departmentsFromDB = db.query("SELECT * FROM jobRole");
-      // pass the departments to a choice constructor function
+      const departments = await getDepartments(db);
+
+      const generateDepartmentChoices = (departments) => {
+        return departments.map((department) => {
+          return {
+            name: department.name,
+            value: department.id,
+          };
+        });
+      };
+
+      const addRoleQuestion = [
+        {
+          type: "list",
+          message: "Please select a department:",
+          name: "departmentId",
+          choices: generateDepartmentChoices(departments),
+        },
+        {
+          type: "input",
+          message: "Please enter role title:",
+          name: "title",
+        },
+        {
+          type: "input",
+          message: "Please enter role salary:",
+          name: "salary",
+        },
+      ];
+
       // prompt question to select department, title, salary and get answers
-      //const role = await inquirer.prompt(addRoleQuestion);
+      const { departmentId, title, salary } = await inquirer.prompt(
+        addRoleQuestion
+      );
 
       // construct mysql insert query for role
+      const query = `INSERT INTO role (title, salary, departmentId) VALUES ("${title}", "${salary}", "${departmentId}")`;
+
       // execute mysql query
+      await db.query(query);
     }
 
-    //if (chosenAction === "addAEmployee") {
-    // get roles from DB
-    // get employees from DB
-    // pass the roles to a choice constructor function
-    // pass the employees to a choice constructor function
-    // prompt question to select role, select manager, first name, last name and get answers
-    //const employee = await inquirer.prompt(addEmployeeQuestion);
+    if (chosenAction === "addAEmployee") {
+      // get roles from DB
+      const roles = await getRoles(db);
 
-    // construct mysql insert query for employee
-    // execute mysql query
-    //}
+      // get employees from DB
+      const employees = await getEmployees(db);
+
+      // pass the roles to a choice constructor function
+      const generateRoleChoices = (roles) => {
+        return roles.map((role) => {
+          return {
+            name: role.title,
+            value: role.id,
+          };
+        });
+      };
+
+      // pass the employees to a choice constructor function
+      const generateManagerChoices = (employees) => {
+        const defaultChoices = [{ name: "None", value: "NULL" }];
+
+        const choices = employees.map((employee) => {
+          return {
+            name: employee.firstName,
+            value: employee.id,
+          };
+        });
+
+        const managerChoices = defaultChoices.concat(choices);
+
+        return managerChoices;
+      };
+
+      const addEmployeeQuestion = [
+        {
+          type: "input",
+          message: "Please enter the First Name:",
+          name: "firstName",
+        },
+        {
+          type: "input",
+          message: "Please enter the Last Name:",
+          name: "lastName",
+        },
+        {
+          type: "list",
+          message: "Please select a role:",
+          name: "roleId",
+          choices: generateRoleChoices(roles),
+        },
+        {
+          type: "list",
+          message: "Please select a Manager:",
+          name: "managerId",
+          choices: generateManagerChoices(employees),
+        },
+      ];
+
+      // prompt question to select role, select manager, first name, last name and get answers
+      const { firstName, lastName, roleId, managerId } = await inquirer.prompt(
+        addEmployeeQuestion
+      );
+
+      // construct mysql insert query for employee
+      const query = `INSERT INTO employee (firstName, lastName, roleId, managerId) VALUES ("${firstName}", "${lastName}", "${roleId}", ${managerId})`;
+
+      console.log(query);
+      // execute mysql query
+      await db.query(query);
+    }
 
     //if (chosenAction === "deleteARole") {
     // get roles from DB
