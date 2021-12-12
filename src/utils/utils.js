@@ -44,43 +44,28 @@ const displayEmployeesByDepartment = async (db) => {
   return console.table(employees);
 };
 
-const getDepartments = (db) => {
+const getDepartments = async (db) => {
   // execute mysql query
+  const departments = await db.query("SELECT * FROM department");
+
   // return departments
+  return departments;
 };
 
-const getRoles = (db) => {
+const getRoles = async (db) => {
   // execute mysql query
+  const roles = await db.query("SELECT * FROM role");
+
   // return roles
+  return roles;
 };
 
-const getEmployees = (db) => {
+const getEmployees = async (db) => {
   // execute mysql query
+  const employees = await db.query("SELECT * FROM employee");
+
   // return employees
-};
-
-const constructDepartmentChoices = (departments) => {
-  // return an array of department choices
-};
-
-const constructRoleChoices = (roles) => {
-  // return an array of role choices
-};
-
-const constructEmployeeChoices = (roles) => {
-  // return an array of employee choices
-};
-
-const generateDepartmentChoices = (departments) => {
-  //generate Department Choices
-};
-
-const generateRoleChoices = (roles) => {
-  //generate Role Choices
-};
-
-const generateManagerChoices = (managers) => {
-  // generate Manager Choices
+  return employees;
 };
 
 module.exports = {
@@ -90,10 +75,6 @@ module.exports = {
   getDepartments,
   getRoles,
   getEmployees,
-  constructDepartmentChoices,
-  constructRoleChoices,
-  constructEmployeeChoices,
-  generateDepartmentChoices,
-  generateRoleChoices,
-  generateManagerChoices,
+  displayEmployeesByDepartment,
+  displayEmployeesByManager,
 };
