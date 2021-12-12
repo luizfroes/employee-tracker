@@ -2,7 +2,7 @@ const {
   generateRoleChoices,
   generateManagerChoices,
   generateDepartmentChoices,
-} = require("./modules/utils");
+} = require("./utils/utils");
 
 const openingQuestion = [
   {
@@ -82,52 +82,7 @@ const addDepartmentQuestion = [
   },
 ];
 
-const addRoleQuestion = [
-  {
-    type: "list",
-    message: "Please select a department:",
-    name: "departmentId",
-    choices: generateDepartmentChoices(departments),
-  },
-  {
-    type: "input",
-    message: "Please enter role title:",
-    name: "title",
-  },
-  {
-    type: "input",
-    message: "Please enter role salary:",
-    name: "salary",
-  },
-];
-
-const addEmployeeQuestion = [
-  {
-    type: "list",
-    message: "Please select a role:",
-    name: "roleId",
-    choices: generateRoleChoices(roles),
-  },
-  {
-    type: "input",
-    message: "Please enter the First Name:",
-    name: "firstName",
-  },
-  {
-    type: "input",
-    message: "Please enter the Last Name:",
-    name: "lastName",
-  },
-  {
-    type: "list",
-    message: "Please select a Manager:",
-    name: "managerId",
-    choices: generateManagerChoices(managers),
-  },
-];
 module.exports = {
   openingQuestion,
   addDepartmentQuestion,
-  addRoleQuestion,
-  addEmployeeQuestion,
 };
