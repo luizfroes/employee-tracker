@@ -1,16 +1,25 @@
 const displayDepartments = () => {
   // execute mysql query
+  const departments = await db.query("SELECT * FROM departments");
+
   // log/table departments
+  return console.table(departments);
 };
 
 const displayRoles = () => {
   // execute mysql query
+  const roles = await db.query("SELECT * FROM roles");
+
   // log/table roles
+  return console.table(roles);
 };
 
 const displayEmployees = () => {
   // execute mysql query
+  const employees = await db.query("SELECT * FROM employees");
+
   // log/table employees
+  return console.table(employees);
 };
 
 const getDepartments = () => {
