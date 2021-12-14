@@ -16,6 +16,7 @@ const {
   generateRoleChoices,
   generateManagerChoices,
   generateEmployeeChoices,
+  generateDepartmentChoices,
 } = require("./utils/utils");
 
 const start = async () => {
@@ -210,6 +211,12 @@ const start = async () => {
           name: "employeeId",
           choices: generateEmployeeChoices(employees),
         },
+        {
+          type: "list",
+          message: "Please select a role:",
+          name: "roleId",
+          choices: generateRoleChoices(roles),
+        },
       ];
 
       const { employeeId } = await inquirer.prompt(deleteEmployeeQuestion);
@@ -221,17 +228,71 @@ const start = async () => {
       db.query(query);
     }
 
-    //if (chosenAction === "updateEmployeeRole") {
-    // get employees from DB
-    // construct mysql update query
-    // execute mysql query
-    //}
+    if (chosenAction === "updateEmployeeRole") {
+      if (!employees.length) {
+        console.log("There is no Employee to update");
 
-    //if (chosenAction === "updateEmployeeManagers") {
-    // get employees from DB
-    // construct mysql update query
-    // execute mysql query
-    //}
+        return start();
+      }
+
+      const updateEmployeeRoleQuestions = [
+        {
+          type: "list",
+          message: "Please select the Employee you would like to update:",
+          name: "employeeId",
+          choices: generateEmployeeChoices(employees),
+        },
+        {
+          type: "list",
+          message: "Please select the employee new role:",
+          name: "roleId",
+          choices: generateRoleChoices(roles),
+        },
+      ];
+
+      const { employeeId, roleId } = await inquirer.prompt(
+        updateEmployeeRoleQuestions
+      );
+
+      // construct mysql update query
+      const query = `UPDATE employee SET roleId = ${roleId} WHERE id = ${employeeId}`;
+
+      // execute mysql query
+      db.query(query);
+    }
+
+    if (chosenAction === "updateEmployeeManagers") {
+      if (!employees.length) {
+        console.log("There is no Employee to update");
+
+        return start();
+      }
+
+      const updateEmployeeRoleQuestions = [
+        {
+          type: "list",
+          message: "Please select the Employee you would like to update:",
+          name: "employeeId",
+          choices: generateEmployeeChoices(employees),
+        },
+        {
+          type: "list",
+          message: "Please select the employee new Manager:",
+          name: "managerId",
+          choices: generateDepartmentChoices(employees),
+        },
+      ];
+
+      const { employeeId, managerId } = await inquirer.prompt(
+        updateEmployeeRoleQuestions
+      );
+
+      // construct mysql update query
+      const query = `UPDATE employee SET managerId = ${managerId} WHERE id = ${employeeId}`;
+
+      // execute mysql query
+      db.query(query);
+    }
 
     if (chosenAction === "viewAllDepartments") {
       displayDepartments(db);
