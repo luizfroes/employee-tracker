@@ -21,7 +21,7 @@ const displayRoles = async (db) => {
 const displayEmployees = async (db) => {
   // execute mysql query
   const employees = await db.query(
-    "SELECT employee_role.firstName AS Name, employee_role.lastName AS Surname, title AS Role, salary AS Salary, name AS Department FROM employee employee_role LEFT JOIN role ON employee_role.roleId=role.id LEFT JOIN department ON role.departmentId=department.id"
+    "SELECT employee_role.id, employee_role.firstName AS Name, employee_role.lastName AS Surname, title AS Role, salary AS Salary, name AS Department FROM employee employee_role LEFT JOIN role ON employee_role.roleId=role.id LEFT JOIN department ON role.departmentId=department.id ORDER BY employee_role.id"
   );
 
   // log/table employees
@@ -70,6 +70,48 @@ const getEmployees = async (db) => {
   return employees;
 };
 
+const generateRoleChoices = (roles) => {
+  return roles.map((role) => {
+    return {
+      name: role.title,
+      value: role.id,
+    };
+  });
+};
+
+const generateDepartmentChoices = (departments) => {
+  return departments.map((department) => {
+    return {
+      name: department.name,
+      value: department.id,
+    };
+  });
+};
+
+const generateEmployeeChoices = (employees) => {
+  return employees.map((employee) => {
+    return {
+      name: employee.firstName,
+      value: employee.id,
+    };
+  });
+};
+
+const generateManagerChoices = (employees) => {
+  const defaultChoices = [{ name: "None", value: "NULL" }];
+
+  const choices = employees.map((employee) => {
+    return {
+      name: employee.firstName,
+      value: employee.id,
+    };
+  });
+
+  const managerChoices = defaultChoices.concat(choices);
+
+  return managerChoices;
+};
+
 module.exports = {
   displayDepartments,
   displayRoles,
@@ -79,4 +121,8 @@ module.exports = {
   getEmployees,
   displayEmployeesByDepartment,
   displayEmployeesByManager,
+  generateRoleChoices,
+  generateDepartmentChoices,
+  generateManagerChoices,
+  generateEmployeeChoices,
 };

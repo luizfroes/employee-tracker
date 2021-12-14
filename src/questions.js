@@ -4,7 +4,7 @@ const {
   generateDepartmentChoices,
 } = require("./utils/utils");
 
-const openingQuestion = [
+const openingQuestions = [
   {
     type: "list",
     message: "What would you like to do?",
@@ -83,6 +83,6 @@ const addDepartmentQuestion = [
 ];
 
 module.exports = {
-  openingQuestion,
+  openingQuestions,
   addDepartmentQuestion,
 };
