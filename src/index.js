@@ -12,7 +12,6 @@ const {
   getDepartments,
   getRoles,
   getEmployees,
-  displayEmployeesByDepartment,
   generateRoleChoices,
   generateManagerChoices,
   generateEmployeeChoices,
@@ -45,6 +44,15 @@ const start = async () => {
     // get employees from DB
     const employees = await getEmployees(db);
 
+    const departmentChoice = [
+      {
+        type: "list",
+        message: "Please select a department:",
+        name: "departmentId",
+        choices: generateDepartmentChoices(departments),
+      },
+    ];
+
     // insert if blocks for all actions
     if (chosenAction === "addADepartment") {
       //prompt department questions (name) and get answers
@@ -58,15 +66,6 @@ const start = async () => {
     }
 
     if (chosenAction === "addARole") {
-      const generateDepartmentChoices = (departments) => {
-        return departments.map((department) => {
-          return {
-            name: department.name,
-            value: department.id,
-          };
-        });
-      };
-
       const addRoleQuestions = [
         {
           type: "list",
@@ -180,16 +179,7 @@ const start = async () => {
         return start();
       }
 
-      const deleteDepartmentQuestion = [
-        {
-          type: "list",
-          message: "Please select a department:",
-          name: "departmentId",
-          choices: generateDepartmentChoices(departments),
-        },
-      ];
-
-      const { departmentId } = await inquirer.prompt(deleteDepartmentQuestion);
+      const { departmentId } = await inquirer.prompt(departmentChoice);
 
       // construct mysql delete query
       const query = `DELETE FROM department WHERE id=${departmentId}`;
@@ -335,7 +325,22 @@ const start = async () => {
     }
 
     if (chosenAction === "viewEmployeesByDepartment") {
-      displayEmployeesByDepartment(db);
+      const departmentChoice = [
+        {
+          type: "list",
+          message: "Please select a department:",
+          name: "departmentId",
+          choices: generateDepartmentChoices(departments),
+        },
+      ];
+
+      const { departmentId } = await inquirer.prompt(departmentChoice);
+
+      // construct mysql view query ordered by department
+      const query = `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id WHERE role.departmentId = ${departmentId};`;
+
+      // execute mysql query
+      console.table(query);
     }
 
     //if (chosenAction === "viewDepartmentBudget") {
