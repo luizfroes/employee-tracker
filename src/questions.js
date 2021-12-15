@@ -1,9 +1,3 @@
-const {
-  generateRoleChoices,
-  generateManagerChoices,
-  generateDepartmentChoices,
-} = require("./utils/utils");
-
 const openingQuestions = [
   {
     type: "list",
@@ -61,6 +55,10 @@ const openingQuestions = [
       {
         name: "View Employees by Department",
         value: "viewEmployeesByDepartment",
+      },
+      {
+        name: "View Employees by Role",
+        value: "viewEmployeesByRole",
       },
       {
         name: "View the total budget of a Department",

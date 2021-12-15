@@ -1,5 +1,4 @@
 const inquirer = require("inquirer");
-const nodemon = require("nodemon");
 
 const Db = require("./lib/DB");
 
@@ -50,6 +49,15 @@ const start = async () => {
         message: "Please select a department:",
         name: "departmentId",
         choices: generateDepartmentChoices(departments),
+      },
+    ];
+
+    const roleChoice = [
+      {
+        type: "list",
+        message: "Please select a role:",
+        name: "roleId",
+        choices: generateRoleChoices(roles),
       },
     ];
 
@@ -154,16 +162,7 @@ const start = async () => {
         return start();
       }
 
-      const deleteRoleQuestion = [
-        {
-          type: "list",
-          message: "Please select a role:",
-          name: "roleId",
-          choices: generateRoleChoices(roles),
-        },
-      ];
-
-      const { roleId } = await inquirer.prompt(deleteRoleQuestion);
+      const { roleId } = await inquirer.prompt(roleChoice);
 
       // construct mysql delete query
       const query = `DELETE FROM role WHERE id=${roleId}`;
@@ -290,11 +289,11 @@ const start = async () => {
     }
 
     if (chosenAction === "viewAllRoles") {
-      displayRoles(db);
+      await displayRoles(db);
     }
 
     if (chosenAction === "viewAllEmployees") {
-      displayEmployees(db);
+      await displayEmployees(db);
     }
 
     if (chosenAction === "viewEmployeesByManager") {
@@ -325,19 +324,24 @@ const start = async () => {
     }
 
     if (chosenAction === "viewEmployeesByDepartment") {
-      const departmentChoice = [
-        {
-          type: "list",
-          message: "Please select a department:",
-          name: "departmentId",
-          choices: generateDepartmentChoices(departments),
-        },
-      ];
-
       const { departmentId } = await inquirer.prompt(departmentChoice);
 
       // construct mysql view query ordered by department
-      const query = `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id WHERE role.departmentId = ${departmentId};`;
+      const query = await db.query(
+        `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id WHERE role.departmentId = ${departmentId};`
+      );
+
+      // execute mysql query
+      console.table(query);
+    }
+
+    if (chosenAction === "viewEmployeesByRole") {
+      const { roleId } = await inquirer.prompt(roleChoice);
+
+      // construct mysql view query ordered by department
+      const query = await db.query(
+        `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id WHERE employee_role.roleId = ${roleId};`
+      );
 
       // execute mysql query
       console.table(query);
