@@ -21,25 +21,7 @@ const displayRoles = async (db) => {
 const displayEmployees = async (db) => {
   // execute mysql query
   const employees = await db.query(
-    "SELECT employee_role.id, employee_role.firstName AS Name, employee_role.lastName AS Surname, title AS Role, salary AS Salary, name AS Department FROM employee employee_role LEFT JOIN role ON employee_role.roleId=role.id LEFT JOIN department ON role.departmentId=department.id ORDER BY employee_role.id"
-  );
-
-  // log/table employees
-  return console.table(employees);
-};
-
-const displayEmployeesByManager = async (db) => {
-  // execute mysql query
-  const employees = await db.query("SELECT * FROM employee ORDER BY ");
-
-  // log/table employees
-  return console.table(employees);
-};
-
-const displayEmployeesByDepartment = async (db) => {
-  // execute mysql query
-  const employees = await db.query(
-    "SELECT employee_role.firstName AS Name, employee_role.lastName AS Surname, title AS Role, salary AS Salary, name AS Department FROM employee employee_role LEFT JOIN role ON employee_role.roleId=role.id LEFT JOIN department ON role.departmentId=department.id ORDER BY department.name;"
+    `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id;`
   );
 
   // log/table employees
@@ -112,6 +94,14 @@ const generateManagerChoices = (employees) => {
   return managerChoices;
 };
 
+const generateEmployeesByManagerChoices = (managers) => {
+  return managers.map((manager) => {
+    return {
+      name: manager.Manager,
+      value: manager.roleId,
+    };
+  });
+};
 module.exports = {
   displayDepartments,
   displayRoles,
@@ -119,10 +109,9 @@ module.exports = {
   getDepartments,
   getRoles,
   getEmployees,
-  displayEmployeesByDepartment,
-  displayEmployeesByManager,
   generateRoleChoices,
   generateDepartmentChoices,
   generateManagerChoices,
   generateEmployeeChoices,
+  generateEmployeesByManagerChoices,
 };

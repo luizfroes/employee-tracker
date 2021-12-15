@@ -17,6 +17,7 @@ const {
   generateManagerChoices,
   generateEmployeeChoices,
   generateDepartmentChoices,
+  generateEmployeesByManagerChoices,
 } = require("./utils/utils");
 
 const start = async () => {
@@ -295,7 +296,7 @@ const start = async () => {
     }
 
     if (chosenAction === "viewAllDepartments") {
-      displayDepartments(db);
+      await displayDepartments(db);
     }
 
     if (chosenAction === "viewAllRoles") {
@@ -306,10 +307,32 @@ const start = async () => {
       displayEmployees(db);
     }
 
-    //if (chosenAction === "viewEmployeesByManager") {
-    // construct mysql view query ordered by manager
-    // execute mysql query
-    //}
+    if (chosenAction === "viewEmployeesByManager") {
+      const managers = await db.query(
+        `SELECT DISTINCT employee_manager.roleId, CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_manager RIGHT JOIN employee ON employee.managerId = employee_manager.roleId WHERE employee_manager.roleId IS NOT NULL;`
+      );
+
+      const viewEmployeesByManagerQuestion = [
+        {
+          type: "list",
+          message: "Please select a Manager:",
+          name: "managerId",
+          choices: generateEmployeesByManagerChoices(managers),
+        },
+      ];
+
+      const { managerId } = await inquirer.prompt(
+        viewEmployeesByManagerQuestion
+      );
+
+      // construct mysql view query ordered by manager
+      const query = await db.query(
+        `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.roleId WHERE employee_role.managerId = ${managerId};`
+      );
+
+      // execute mysql query
+      console.table(query);
+    }
 
     if (chosenAction === "viewEmployeesByDepartment") {
       displayEmployeesByDepartment(db);
