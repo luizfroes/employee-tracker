@@ -1,5 +1,7 @@
 const inquirer = require("inquirer");
 
+const { printTable } = require("console-table-printer");
+
 const Db = require("./lib/DB");
 
 const { openingQuestions, addDepartmentQuestion } = require("./questions");
@@ -71,6 +73,8 @@ const start = async () => {
 
       // execute mysql query
       await db.query(query);
+
+      console.log(`Department ${department} added successfully!`);
     }
 
     if (chosenAction === "addARole") {
@@ -109,6 +113,8 @@ const start = async () => {
 
       // execute mysql query
       await db.query(query);
+
+      console.log(`Role ${title} added successfully!`);
     }
 
     if (chosenAction === "addAEmployee") {
@@ -153,6 +159,8 @@ const start = async () => {
 
       // execute mysql query
       await db.query(query);
+
+      console.log(`Employee ${firstName} ${lastName} added successfully!`);
     }
 
     if (chosenAction === "deleteARole") {
@@ -162,13 +170,15 @@ const start = async () => {
         return start();
       }
 
-      const { roleId } = await inquirer.prompt(roleChoice);
+      const { roleId, roleTitle } = await inquirer.prompt(roleChoice);
 
       // construct mysql delete query
       const query = `DELETE FROM role WHERE id=${roleId}`;
 
       // execute mysql query
       db.query(query);
+
+      console.log(`Role ${roleTitle} deleted successfully!`);
     }
 
     if (chosenAction === "deleteADepartment") {
@@ -178,13 +188,17 @@ const start = async () => {
         return start();
       }
 
-      const { departmentId } = await inquirer.prompt(departmentChoice);
+      const { departmentId, departmentName } = await inquirer.prompt(
+        departmentChoice
+      );
 
       // construct mysql delete query
       const query = `DELETE FROM department WHERE id=${departmentId}`;
 
       // execute mysql query
       db.query(query);
+
+      console.log(`Department ${departmentName} deleted successfully!`);
     }
 
     if (chosenAction === "deleteAEmployee") {
@@ -320,7 +334,7 @@ const start = async () => {
       );
 
       // execute mysql query
-      console.table(query);
+      printTable(query);
     }
 
     if (chosenAction === "viewEmployeesByDepartment") {
@@ -332,7 +346,7 @@ const start = async () => {
       );
 
       // execute mysql query
-      console.table(query);
+      printTable(query);
     }
 
     if (chosenAction === "viewEmployeesByRole") {
@@ -344,7 +358,7 @@ const start = async () => {
       );
 
       // execute mysql query
-      console.table(query);
+      printTable(query);
     }
 
     //if (chosenAction === "viewDepartmentBudget") {

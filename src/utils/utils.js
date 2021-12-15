@@ -1,3 +1,5 @@
+const { printTable } = require("console-table-printer");
+
 const displayDepartments = async (db) => {
   // execute mysql query
   const departments = await db.query(
@@ -5,7 +7,7 @@ const displayDepartments = async (db) => {
   );
 
   // log/table departments
-  return console.table(departments);
+  return printTable(departments);
 };
 
 const displayRoles = async (db) => {
@@ -15,7 +17,7 @@ const displayRoles = async (db) => {
   );
 
   // log/table roles
-  return console.table(roles);
+  return printTable(roles);
 };
 
 const displayEmployees = async (db) => {
@@ -25,7 +27,7 @@ const displayEmployees = async (db) => {
   );
 
   // log/table employees
-  return console.table(employees);
+  return printTable(employees);
 };
 
 const getDepartments = async (db) => {
