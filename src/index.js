@@ -361,11 +361,23 @@ const start = async () => {
       printTable(query);
     }
 
-    //if (chosenAction === "viewDepartmentBudget") {
-    // get departments budget from DB
-    // pass the departments budget add function
-    // og the result
-    //}
+    if (chosenAction === "viewDepartmentBudget") {
+      const { departmentId } = await inquirer.prompt(departmentChoice);
+
+      // get departments budget from DB
+      const query = await db.query(`SELECT  
+      name as "Department",
+          SUM(salary) as "Budget"  
+        FROM employee employee_role 
+        LEFT JOIN role ON employee_role.roleId = role.id 
+        LEFT JOIN department 
+        ON role.departmentId = department.id 
+        WHERE department.id = ${departmentId}
+        GROUP BY name;`);
+
+      // execute mysql query
+      printTable(query);
+    }
 
     if (chosenAction === "quit") {
       inProgress = false;
