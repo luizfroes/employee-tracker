@@ -2,9 +2,10 @@ const { printTable } = require("console-table-printer");
 
 const displayDepartments = async (db) => {
   // execute mysql query
-  const departments = await db.query(
-    "SELECT id, name AS Department FROM department"
-  );
+  const departments = await db.query(`SELECT 
+    id, 
+    name AS Department 
+  FROM department;`);
 
   // log/table departments
   return printTable(departments);
@@ -12,9 +13,13 @@ const displayDepartments = async (db) => {
 
 const displayRoles = async (db) => {
   // execute mysql query
-  const roles = await db.query(
-    "SELECT role.id, role.title AS Role, role.salary AS Salary, department.name AS Department FROM role JOIN department ON role.departmentId = department.id ORDER BY department.name;"
-  );
+  const roles = await db.query(`SELECT 
+    role.id, 
+    role.title AS Role, 
+    role.salary AS Salary, 
+    department.name AS Department 
+  FROM role JOIN department ON role.departmentId = department.id 
+  ORDER BY department.name;`);
 
   // log/table roles
   return printTable(roles);
@@ -22,9 +27,15 @@ const displayRoles = async (db) => {
 
 const displayEmployees = async (db) => {
   // execute mysql query
-  const employees = await db.query(
-    `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id;`
-  );
+  const employees = await db.query(`SELECT 
+    CONCAT(employee_role.firstName, " ", employee_role.lastName) AS "Name", 
+    title as "Role", 
+    salary as "Salary", 
+    name as "Department", 
+    CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" 
+  FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id 
+  LEFT JOIN department ON role.departmentId = department.id 
+  LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id;`);
 
   // log/table employees
   return printTable(employees);
@@ -48,10 +59,24 @@ const getRoles = async (db) => {
 
 const getEmployees = async (db) => {
   // execute mysql query
-  const employees = await db.query("SELECT * FROM employee");
+  const employees = await db.query(
+    `SELECT id, CONCAT(firstName, " ", lastName) AS Name FROM employee`
+  );
 
   // return employees
   return employees;
+};
+
+const getManagers = async (db) => {
+  // execute mysql query
+  const managers = await db.query(`SELECT 
+    DISTINCT CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "manager",
+    employee.managerId 
+  FROM employee employee_manager JOIN employee ON employee.managerId = employee_manager.id 
+  WHERE NOT (employee.managerId <=> NULL);`);
+
+  // return managers
+  return managers;
 };
 
 const generateRoleChoices = (roles) => {
@@ -75,7 +100,7 @@ const generateDepartmentChoices = (departments) => {
 const generateEmployeeChoices = (employees) => {
   return employees.map((employee) => {
     return {
-      name: employee.firstName,
+      name: employee.Name,
       value: employee.id,
     };
   });
@@ -86,7 +111,7 @@ const generateManagerChoices = (employees) => {
 
   const choices = employees.map((employee) => {
     return {
-      name: employee.firstName,
+      name: employee.Name,
       value: employee.id,
     };
   });
@@ -99,8 +124,8 @@ const generateManagerChoices = (employees) => {
 const generateEmployeesByManagerChoices = (managers) => {
   return managers.map((manager) => {
     return {
-      name: manager.Manager,
-      value: manager.roleId,
+      name: manager.manager,
+      value: manager.managerId,
     };
   });
 };
@@ -111,6 +136,7 @@ module.exports = {
   getDepartments,
   getRoles,
   getEmployees,
+  getManagers,
   generateRoleChoices,
   generateDepartmentChoices,
   generateManagerChoices,

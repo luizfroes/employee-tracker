@@ -33,8 +33,8 @@ const openingQuestions = [
         value: "updateEmployeeRole",
       },
       {
-        name: "Update Employee Managers",
-        value: "updateEmployeeManagers",
+        name: "Update Employee Manager",
+        value: "updateEmployeeManager",
       },
       {
         name: "View all Departments",

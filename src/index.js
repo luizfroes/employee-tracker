@@ -18,6 +18,7 @@ const {
   generateEmployeeChoices,
   generateDepartmentChoices,
   generateEmployeesByManagerChoices,
+  getManagers,
 } = require("./utils/utils");
 
 const start = async () => {
@@ -45,6 +46,9 @@ const start = async () => {
     // get employees from DB
     const employees = await getEmployees(db);
 
+    //get managers from DB
+    const managers = await getManagers(db);
+
     const departmentChoice = [
       {
         type: "list",
@@ -69,7 +73,9 @@ const start = async () => {
       const { department } = await inquirer.prompt(addDepartmentQuestion);
 
       // construct mysql insert query
-      const query = `INSERT INTO department (name) VALUE ("${department}")`;
+      const query = `INSERT 
+      INTO department (name) 
+      VALUE ("${department}")`;
 
       // execute mysql query
       await db.query(query);
@@ -109,7 +115,9 @@ const start = async () => {
       );
 
       // construct mysql insert query for role
-      const query = `INSERT INTO role (title, salary, departmentId) VALUES ("${title}", "${salary}", "${departmentId}")`;
+      const query = `INSERT 
+      INTO role (title, salary, departmentId) 
+      VALUES ("${title}", "${salary}", "${departmentId}")`;
 
       // execute mysql query
       await db.query(query);
@@ -155,7 +163,9 @@ const start = async () => {
       );
 
       // construct mysql insert query for employee
-      const query = `INSERT INTO employee (firstName, lastName, roleId, managerId) VALUES ("${firstName}", "${lastName}", "${roleId}", ${managerId})`;
+      const query = `INSERT 
+        INTO employee (firstName, lastName, roleId, managerId) 
+        VALUES ("${firstName}", "${lastName}", "${roleId}", ${managerId})`;
 
       // execute mysql query
       await db.query(query);
@@ -170,15 +180,16 @@ const start = async () => {
         return start();
       }
 
-      const { roleId, roleTitle } = await inquirer.prompt(roleChoice);
+      const { roleId } = await inquirer.prompt(roleChoice);
 
       // construct mysql delete query
-      const query = `DELETE FROM role WHERE id=${roleId}`;
+      const query = `DELETE 
+        FROM role WHERE id=${roleId}`;
 
       // execute mysql query
       db.query(query);
 
-      console.log(`Role ${roleTitle} deleted successfully!`);
+      console.log(`Role deleted successfully!`);
     }
 
     if (chosenAction === "deleteADepartment") {
@@ -188,21 +199,20 @@ const start = async () => {
         return start();
       }
 
-      const { departmentId, departmentName } = await inquirer.prompt(
-        departmentChoice
-      );
+      const { departmentId } = await inquirer.prompt(departmentChoice);
 
       // construct mysql delete query
-      const query = `DELETE FROM department WHERE id=${departmentId}`;
+      const query = `DELETE 
+        FROM department WHERE id=${departmentId}`;
 
       // execute mysql query
       db.query(query);
 
-      console.log(`Department ${departmentName} deleted successfully!`);
+      console.log(`Department deleted successfully!`);
     }
 
     if (chosenAction === "deleteAEmployee") {
-      if (!departments.length) {
+      if (!employees.length) {
         console.log("There is no Employee to delete");
 
         return start();
@@ -215,21 +225,18 @@ const start = async () => {
           name: "employeeId",
           choices: generateEmployeeChoices(employees),
         },
-        {
-          type: "list",
-          message: "Please select a role:",
-          name: "roleId",
-          choices: generateRoleChoices(roles),
-        },
       ];
 
       const { employeeId } = await inquirer.prompt(deleteEmployeeQuestion);
 
       // construct mysql delete query
-      const query = `DELETE FROM employee WHERE id=${employeeId}`;
+      const query = `DELETE 
+        FROM employee WHERE id=${employeeId}`;
 
       // execute mysql query
       db.query(query);
+
+      console.log(`Employee  deleted successfully!`);
     }
 
     if (chosenAction === "updateEmployeeRole") {
@@ -259,13 +266,14 @@ const start = async () => {
       );
 
       // construct mysql update query
-      const query = `UPDATE employee SET roleId = ${roleId} WHERE id = ${employeeId}`;
+      const query = `UPDATE 
+        employee SET roleId = ${roleId} WHERE id = ${employeeId}`;
 
       // execute mysql query
       db.query(query);
     }
 
-    if (chosenAction === "updateEmployeeManagers") {
+    if (chosenAction === "updateEmployeeManager") {
       if (!employees.length) {
         console.log("There is no Employee to update");
 
@@ -283,7 +291,7 @@ const start = async () => {
           type: "list",
           message: "Please select the employee new Manager:",
           name: "managerId",
-          choices: generateDepartmentChoices(employees),
+          choices: generateEmployeeChoices(employees),
         },
       ];
 
@@ -292,7 +300,8 @@ const start = async () => {
       );
 
       // construct mysql update query
-      const query = `UPDATE employee SET managerId = ${managerId} WHERE id = ${employeeId}`;
+      const query = `UPDATE 
+        employee SET managerId = ${managerId} WHERE id = ${employeeId}`;
 
       // execute mysql query
       db.query(query);
@@ -311,10 +320,6 @@ const start = async () => {
     }
 
     if (chosenAction === "viewEmployeesByManager") {
-      const managers = await db.query(
-        `SELECT DISTINCT employee_manager.roleId, CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_manager RIGHT JOIN employee ON employee.managerId = employee_manager.roleId WHERE employee_manager.roleId IS NOT NULL;`
-      );
-
       const viewEmployeesByManagerQuestion = [
         {
           type: "list",
@@ -328,10 +333,17 @@ const start = async () => {
         viewEmployeesByManagerQuestion
       );
 
-      // construct mysql view query ordered by manager
-      const query = await db.query(
-        `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.roleId WHERE employee_role.managerId = ${managerId};`
-      );
+      //construct mysql view query ordered by manager
+      const query = await db.query(`SELECT
+          employee_role.firstName as "First Name",
+          employee_role.lastName as "Last Name",
+          title as "Role", salary as "Salary",
+          name as "Department",
+          CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager"
+        FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id
+        LEFT JOIN department ON role.departmentId = department.id
+        LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id
+        WHERE employee_role.managerId = ${managerId};`);
 
       // execute mysql query
       printTable(query);
@@ -341,9 +353,17 @@ const start = async () => {
       const { departmentId } = await inquirer.prompt(departmentChoice);
 
       // construct mysql view query ordered by department
-      const query = await db.query(
-        `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id WHERE role.departmentId = ${departmentId};`
-      );
+      const query = await db.query(`SELECT 
+        employee_role.firstName as "First Name", 
+        employee_role.lastName as "Last Name", 
+        title as "Role", 
+        salary as "Salary", 
+        name as "Department", 
+        CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" 
+      FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id 
+      LEFT JOIN department ON role.departmentId = department.id 
+      LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id 
+      WHERE role.departmentId = ${departmentId};`);
 
       // execute mysql query
       printTable(query);
@@ -353,9 +373,16 @@ const start = async () => {
       const { roleId } = await inquirer.prompt(roleChoice);
 
       // construct mysql view query ordered by department
-      const query = await db.query(
-        `SELECT employee_role.firstName as "First Name", employee_role.lastName as "Last Name", title as "Role", salary as "Salary", name as "Department", CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id LEFT JOIN department ON role.departmentId = department.id LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id WHERE employee_role.roleId = ${roleId};`
-      );
+      const query = await db.query(`SELECT 
+            employee_role.firstName as "First Name", 
+            employee_role.lastName as "Last Name", 
+            title as "Role", 
+            salary as "Salary", 
+            name as "Department", 
+            CONCAT (employee_manager.firstName, " ", employee_manager.lastName) as "Manager" 
+          FROM employee employee_role LEFT JOIN role ON employee_role.roleId = role.id 
+          LEFT JOIN department ON role.departmentId = department.id 
+          LEFT JOIN employee employee_manager ON employee_role.managerId = employee_manager.id WHERE employee_role.roleId = ${roleId};`);
 
       // execute mysql query
       printTable(query);
@@ -381,6 +408,7 @@ const start = async () => {
 
     if (chosenAction === "quit") {
       inProgress = false;
+      process.exit();
     }
   }
 };
