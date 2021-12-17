@@ -129,6 +129,7 @@ const generateEmployeesByManagerChoices = (managers) => {
     };
   });
 };
+
 module.exports = {
   displayDepartments,
   displayRoles,
