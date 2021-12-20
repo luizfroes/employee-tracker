@@ -19,6 +19,8 @@ const {
   generateDepartmentChoices,
   generateEmployeesByManagerChoices,
   getManagers,
+  validateNumber,
+  validateString,
 } = require("./utils/utils");
 
 const start = async () => {
@@ -95,11 +97,13 @@ const start = async () => {
           type: "input",
           message: "Please enter role title:",
           name: "title",
+          validate: validateString,
         },
         {
           type: "input",
           message: "Please enter role salary:",
           name: "salary",
+          validate: validateNumber,
         },
       ];
 
@@ -137,11 +141,13 @@ const start = async () => {
           type: "input",
           message: "Please enter the First Name:",
           name: "firstName",
+          validate: validateString,
         },
         {
           type: "input",
           message: "Please enter the Last Name:",
           name: "lastName",
+          validate: validateString,
         },
         {
           type: "list",

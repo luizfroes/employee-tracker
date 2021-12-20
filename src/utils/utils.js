@@ -130,6 +130,32 @@ const generateEmployeesByManagerChoices = (managers) => {
   });
 };
 
+const validateNumber = (input) => {
+  const numberInput = Number(input);
+
+  if (!input) {
+    return "This field cannot be empty!";
+  }
+
+  if (isNaN(numberInput) || numberInput <= 0) {
+    return "This input should be a valid number!";
+  }
+  return true;
+};
+
+const validateString = (input) => {
+  const numberInput = input;
+
+  if (!input) {
+    return "This field cannot be empty!";
+  }
+
+  if (!isNaN(numberInput)) {
+    return "This input should not be a number!";
+  }
+  return true;
+};
+
 module.exports = {
   displayDepartments,
   displayRoles,
@@ -143,4 +169,6 @@ module.exports = {
   generateManagerChoices,
   generateEmployeeChoices,
   generateEmployeesByManagerChoices,
+  validateNumber,
+  validateString
 };

@@ -1,3 +1,5 @@
+const { validateString } = require("./utils/utils");
+
 const openingQuestions = [
   {
     type: "list",
@@ -77,6 +79,7 @@ const addDepartmentQuestion = [
     type: "input",
     message: "What is the name of the Department you want to add?",
     name: "department",
+    validate: validateString,
   },
 ];
 
