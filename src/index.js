@@ -372,7 +372,7 @@ const start = async () => {
       WHERE role.departmentId = ${departmentId};`);
 
       // execute mysql query
-      printTable(query);
+      print.Table(query);
     }
 
     if (chosenAction === "viewEmployeesByRole") {
